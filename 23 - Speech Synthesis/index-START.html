@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Speech Synthesis</title>
+  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="voiceinator">
+
+      <h1>The Voiceinator 5000</h1>
+
+      <select name="voice" id="voices">
+        <option value="">Select A Voice</option>
+      </select>
+
+      <form name="language" id="languages">
+        <input type="checkbox" id="English" value="en" checked>
+          <label for="English">English</label>
+        <input type="checkbox" id="Spanish" value="es" checked>
+          <label for="Spanish">Spanish</label>
+        <input type="checkbox" id="German" value="de">
+          <label for="German">German</label>
+        <input type="checkbox" id="French" value="fr">
+          <label for="French">French</label>
+        <input type="checkbox" id="Hindi" value="hi">
+          <label for="Hindi">Hindi</label>
+        <input type="checkbox" id="Hindi" value="hi">
+          <label for="Hindi">Hindi</label>
+        <input type="checkbox" id="Indonesian" value="id">
+          <label for="Indonesian">Indonesian</label>
+        <input type="checkbox" id="Italian" value="it">
+          <label for="Italian">Italian</label>
+        <input type="checkbox" id="Japanese" value="ja">
+          <label for="Japanese">Japanese</label>
+        <input type="checkbox" id="Korean" value="ko">
+          <label for="Korean">Korean</label>
+        <input type="checkbox" id="Dutch" value="nl">
+          <label for="Dutch">Dutch</label>
+        <input type="checkbox" id="Polish" value="pl">
+          <label for="Polish">Polish</label>
+        <input type="checkbox" id="Portuguese" value="pt">
+          <label for="Portuguese">Portuguese</label>
+        <input type="checkbox" id="Russian" value="ru">
+          <label for="Russian">Russian</label>
+        <input type="checkbox" id="Chinese" value="zh">
+          <label for="Chinese">Chinese</label>
+      </form>
+
+      <label for="rate">Rate:</label>
+      <input name="rate" type="range" min="0" max="3" value="1" step="0.1">
+
+      <label for="pitch">Pitch:</label>
+
+      <input name="pitch" type="range" min="0" max="2" step="0.1">
+      <textarea name="text">Hello! I love JavaScript 👍</textarea>
+      <button id="stop">Stop!</button>
+      <button id="speak">Speak</button>
+
+    </div>
+
+<script>
+  const msg = new SpeechSynthesisUtterance();
+  let voices = [];
+  const voicesDropdown = document.querySelector('[name="voice"]');
+  const options = document.querySelectorAll('[type="range"], [name="text"]');
+  const speakButton = document.querySelector('#speak');
+  const stopButton = document.querySelector('#stop');
+  const checkboxes = Array.from(document.querySelectorAll('[type="checkbox"]'));
+  let checkedLanguages = checkboxes
+    .filter(language => language.checked)
+    .map(language => language.value);
+
+  msg.text = document.querySelector('[name = text]').value;
+
+  function populateVoices() {
+    voices = speechSynthesis.getVoices();
+    console.table(voices);
+    const mappedVoices = voices
+      .filter(voice => languageFilter(voice.lang))
+      .map(voice => `<option value='${voice.name}'>${voice.name} (${voice.lang})</option>`)
+      .join('');
+    if(mappedVoices) {
+      voicesDropdown.innerHTML = mappedVoices;
+    } else {
+      voicesDropdown.innerHTML = `<option value="">Select A Language</option>`;
+    }
+  }
+
+  function setVoice() {
+    msg.voice = voices.find(voice => voice.name === this.value); 
+  }
+
+  function toggle(startOver = true) {
+    speechSynthesis.cancel();
+    if (startOver) {
+      speechSynthesis.speak(msg);
+    } 
+  }
+
+  function setOption() {
+    console.log(this.name, this.value);
+    msg[this.name] = this.value;
+    toggle();
+  }
+
+  function checkboxUpdate() {
+    checkedLanguages = checkboxes
+      .filter(language => language.checked)
+      .map(language => language.value);
+    populateVoices();
+  }
+
+  function languageFilter(input, languages = checkedLanguages) {
+    for(let i=0;i<languages.length;i++) {
+      if (input.includes(`${languages[i]}`)) {
+        return input;
+      }
+    }
+    return false;
+  }
+
+  speechSynthesis.addEventListener('voiceschanged', populateVoices);
+  voicesDropdown.addEventListener('change', setVoice);
+  options.forEach(option => option.addEventListener('change', setOption));
+  speakButton.addEventListener('click', toggle);
+  stopButton.addEventListener('click', () => toggle(false));
+  checkboxes.forEach(checkbox => addEventListener('change', checkboxUpdate));
+</script>
+
+</body>
+</html>

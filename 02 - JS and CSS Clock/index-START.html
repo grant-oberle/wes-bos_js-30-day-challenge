@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JS + CSS Clock</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+
+    <div class="clock">
+      <div class="clock-face">
+        <div class="hand hour-hand"></div>
+        <div class="hand min-hand"></div>
+        <div class="hand second-hand"></div>
+      </div>
+    </div>
+
+
+  <script>
+    const secondHand = document.querySelector('.second-hand');
+    const minHand = document.querySelector('.min-hand');
+    const hourHand = document.querySelector('.hour-hand');
+
+    function setDate() {
+      const now = new Date();
+
+      const seconds = now.getSeconds();
+      const minutes = now.getMinutes();
+      const hours = now.getHours();
+
+      const secondsDegrees = seconds * 6 + 90; //(seconds/60)*360, plus 90 to offset the original offset of 90 degrees
+      const minutesDegrees = minutes * 6 + 90;
+      const hoursDegrees = hours * 30 + 90;
+
+      console.log(secondsDegrees);
+      const transition = secondHand.style.transition;
+      console.log(transition);
+      /*if (secondsDegrees == 90) {
+        secondHand.style.transition = `0.0s`;
+      } else if (secondsDegrees !== 90) {
+        secondHand.style.transition = `0.05s`;
+      }*/
+
+      secondHand.style.transform = `rotate(${secondsDegrees}deg)`;
+      minHand.style.transform = `rotate(${minutesDegrees}deg)`;
+      hourHand.style.transform = `rotate(${hoursDegrees}deg)`;
+    }
+
+    setInterval(setDate, 1000);
+  </script>
+</body>
+</html>
